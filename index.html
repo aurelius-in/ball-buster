@@ -9,26 +9,27 @@
     <style>
         html, body {
             margin: 0; padding: 0; height: 100%; width: 100%; overflow: hidden; font-family: sans-serif;
-            display: flex; flex-direction: column; justify-content: space-between; background-color: #eee;
+            display: flex; flex-direction: column; justify-content: space-between; background-color: black;
         }
         .header {
             display: flex; justify-content: space-between; width: 100%; padding: 10px; box-sizing: border-box;
         }
         .timer, .round {
-            font-size: 24px;
+            font-size: 24px; color: white;
         }
         .game-message {
-            font-size: 20px; margin: 10px 0;
+            font-size: 20px; margin: 10px 0; color: white;
         }
         .game-grid {
             flex: 1; display: grid; gap: 4px; width: 100%;
         }
         .ball {
-            width: 100%; padding-top: 100%; border-radius: 50%; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.4);
-            transition: transform 0.2s; background-color: lightblue; border: 2px solid blue;
+            width: 100%; padding-top: 100%; background: url('ball1.png') center/contain no-repeat;
+            transition: all 0.5s;
         }
         .bomb {
-            width: 80%; padding-top: 80%; background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="black" d="M12 1C6.48 1 2 5.48 2 11c0 3.58 1.72 6.79 4.39 8.77-.02.23-.04.46-.04.69 0 1.42.51 2.72 1.35 3.76C6.29 23.87 9.01 25 12 25c2.99 0 5.71-1.13 7.92-2.95.84-1.04 1.35-2.34 1.35-3.76 0-.22-.01-.45-.03-.68C21.28 17.79 23 14.58 23 11c0-5.52-4.48-10-11-10zm-1 14h2v6h-2zm0-8h2v6h-2zm10.19 11.97C19.12 20.9 15.7 22 12 22s-7.12-1.1-9.19-2.97c-.39-.36-.61-.86-.61-1.39 0-.55.22-1.06.61-1.42C4.83 14.99 8.3 14 12 14s7.17.99 9.19 2.22c.39.36.61.87.61 1.42s-.22 1.03-.61 1.39z"></path></svg>') center/contain no-repeat;
+            width: 100%; padding-top: 100%; background: url('bomb.png') center/contain no-repeat;
+            transition: all 0.5s;
         }
         .explosion {
             position: absolute; width: 100%; height: 100%; top: 0; left: 0; z-index: 9999; background: rgba(255,0,0,0.5);
@@ -98,8 +99,10 @@
 
         function bustBall(event) {
             const ball = event.target;
-            ball.style.transform = 'scale(1.5)';
-            ball.style.opacity = '0';
+            ball.style.backgroundImage = "url('explode-ball.png')";
+            setTimeout(() => {
+                ball.style.opacity = '0';
+            }, 500);
             ball.removeEventListener('click', bustBall);
 
             const remainingBalls = Array.from(document.querySelectorAll('.ball')).filter(b => getComputedStyle(b).opacity !== '0').length;
@@ -110,17 +113,20 @@
             }
         }
 
-        function bustBomb() {
-            clearInterval(interval);
-            const explosion = document.createElement('div');
-            explosion.className = 'explosion';
-            document.body.appendChild(explosion);
-            setTimeout(() => explosion.remove(), 1000);
-            gameMessage.innerText = 'You hit a bomb! Game Over.';
-            Array.from(document.querySelectorAll('.ball, .bomb')).forEach(el => {
-                el.style.transform = 'scale(1.5)';
-                el.style.opacity = '0';
-            });
+        function bustBomb(event) {
+            const bomb = event.target;
+            bomb.style.backgroundImage = "url('explode-bomb.png')";
+            setTimeout(() => {
+                const explosion = document.createElement('div');
+                explosion.className = 'explosion';
+                document.body.appendChild(explosion);
+                setTimeout(() => explosion.remove(), 1000);
+                gameMessage.innerText = 'You hit a bomb! Game Over.';
+                clearInterval(interval);
+                Array.from(document.querySelectorAll('.ball, .bomb')).forEach(el => {
+                    el.style.opacity = '0';
+                });
+            }, 500);
         }
 
         document.body.addEventListener('touchmove', event => event.preventDefault());
