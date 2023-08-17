@@ -66,15 +66,19 @@
     <script>
         let round = 1;
         let interval;
+        let grid;
         const roundEl = document.getElementById('round');
         const startButton = document.getElementById('startButton');
         const gameMessage = document.getElementById('gameMessage');
 
         function startGame() {
+            // Remove previous grid if it exists
+            if (grid) grid.remove();
+
             roundEl.innerText = 'Round: ' + round;
             let rows = round + 2;
             let cols = round + 1;
-            const grid = document.createElement('div');
+            grid = document.createElement('div');
             grid.style.display = 'grid';
             grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
             document.body.appendChild(grid);
@@ -109,7 +113,7 @@
 
         startButton.addEventListener('click', () => {
             startButton.style.opacity = '0';
-            setTimeout(() => startButton.remove(), 500);
+            setTimeout(() => startButton.style.display = 'none', 500);
             startGame();
         });
 
@@ -147,8 +151,8 @@
                 setTimeout(() => el.style.opacity = '0', 500);
             });
             setTimeout(() => {
+                startButton.style.display = 'block';
                 startButton.style.opacity = '1';
-                document.body.appendChild(startButton);
             }, 1500);
         }
 
