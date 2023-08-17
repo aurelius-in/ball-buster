@@ -8,45 +8,30 @@
     <title>Ball Buster</title>
     <style>
         html, body {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            width: 100%;
-            overflow: hidden;
-            font-family: sans-serif;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
+            margin: 0; padding: 0; height: 100%; width: 100%; overflow: hidden; font-family: sans-serif;
+            display: flex; flex-direction: column; justify-content: space-between;
         }
         .header {
-            display: flex;
-            justify-content: space-between;
-            width: 100%;
-            padding: 10px;
-            box-sizing: border-box;
+            display: flex; justify-content: space-between; width: 100%; padding: 10px; box-sizing: border-box;
         }
         .timer, .round {
             font-size: 24px;
         }
         .game-message {
-            font-size: 20px;
-            margin: 10px 0;
+            font-size: 20px; margin: 10px 0;
         }
         .game-grid {
-            flex: 1;
-            display: grid;
-            gap: 4px;
-            width: 100%;
+            flex: 1; display: grid; gap: 4px; width: 100%;
         }
-        .ball {
-            width: 100%;
-            padding-top: 100%;
-            border-radius: 50%;
+        .ball, .bomb {
+            width: 100%; padding-top: 100%; border-radius: 50%;
             background: radial-gradient(circle at 30% 30%, white, rgba(0,0,0,0));
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.4);
-            transition: transform 0.2s;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.4); transition: transform 0.2s;
         }
-        .ball:active {
+        .bomb {
+            background-color: black;
+        }
+        .ball:active, .bomb:active {
             transform: scale(0.9);
         }
     </style>
@@ -92,26 +77,36 @@
         function populateBalls(num) {
             gameGrid.innerHTML = '';
             for (let i = 0; i < num; i++) {
-                const ball = document.createElement('div');
-                ball.className = 'ball';
-                ball.style.backgroundColor = getRandomColor();
-                ball.addEventListener('click', bustBall);
-                gameGrid.appendChild(ball);
+                const element = (i < round) ? 'bomb' : 'ball';
+                const el = document.createElement('div');
+                el.className = element;
+                el.style.backgroundColor = (element === 'ball') ? getRandomColor() : 'black';
+                el.addEventListener('click', (element === 'ball') ? bustBall : bustBomb);
+                gameGrid.appendChild(el);
             }
         }
 
         function bustBall(event) {
             const ball = event.target;
+            ball.style.transform = 'scale(1.5)';
             ball.style.opacity = '0';
             ball.removeEventListener('click', bustBall);
 
-            // Check if all balls are clicked
             const remainingBalls = Array.from(document.querySelectorAll('.ball')).filter(b => getComputedStyle(b).opacity !== '0').length;
             if (remainingBalls === 0) {
                 round++;
                 roundEl.innerText = 'Round: ' + round;
                 startGame();
             }
+        }
+
+        function bustBomb() {
+            clearInterval(interval);
+            gameMessage.innerText = 'You hit a bomb! Game Over.';
+            Array.from(document.querySelectorAll('.ball, .bomb')).forEach(el => {
+                el.style.transform = 'scale(1.5)';
+                el.style.opacity = '0';
+            });
         }
 
         function getRandomColor() {
