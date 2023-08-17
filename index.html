@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -13,12 +14,9 @@
             width: 100%;
             overflow: hidden;
             font-family: sans-serif;
-        }
-        body {
             display: flex;
             flex-direction: column;
-            align-items: center;
-            background-color: #eee;
+            justify-content: space-between;
         }
         .header {
             display: flex;
@@ -35,18 +33,16 @@
             margin: 10px 0;
         }
         .game-grid {
+            flex: 1;
             display: grid;
-            grid-template-columns: repeat(8, 1fr);
             gap: 4px;
-            width: 90%;
-            height: calc(90% - 80px);
+            width: 100%;
         }
         .ball {
             width: 100%;
             padding-top: 100%;
             border-radius: 50%;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            transform: scale(1);
+            box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.2);
             transition: transform 0.2s;
         }
         .ball:active {
@@ -54,41 +50,43 @@
         }
     </style>
 </head>
+
 <body>
     <div class="header">
         <div class="timer">Time: <span id="timer">0</span></div>
-        <div class="round"></div>
+        <div class="round">Round: 1</div>
     </div>
     <div class="game-message">Bust the balls in time!</div>
     <div class="game-grid"></div>
+
     <script>
         const gameGrid = document.querySelector('.game-grid');
         const timerEl = document.getElementById('timer');
         const roundEl = document.querySelector('.round');
         const gameMessage = document.querySelector('.game-message');
-        let timerValue, interval, round = 0, roundTime;
+        let interval, round = 1;
 
         function startGame() {
-            round++;
-            roundTime = 80 - (round * 5);
-            timerEl.innerText = roundTime;
-            timerValue = setInterval(decreaseTimer, 1000);
-            roundEl.innerText = 'Round: ' + round;
-            populateBalls();
+            let roundBalls = round + 2;
+            gameGrid.style.gridTemplateColumns = `repeat(${roundBalls}, 1fr)`;
+            populateBalls(roundBalls * roundBalls);
+            timerEl.innerText = roundBalls * roundBalls;
+            startTimer();
         }
 
-        function decreaseTimer() {
-            roundTime--;
-            timerEl.innerText = roundTime;
-            if (roundTime <= 0) {
-                clearInterval(timerValue);
-                gameMessage.innerText = 'You lost! Round: ' + round;
-            }
+        function startTimer() {
+            interval = setInterval(() => {
+                timerEl.innerText--;
+                if (timerEl.innerText == "0") {
+                    gameMessage.innerText = 'You lost! Reached Round: ' + round;
+                    clearInterval(interval);
+                }
+            }, 1000);
         }
 
-        function populateBalls() {
+        function populateBalls(num) {
             gameGrid.innerHTML = '';
-            for (let i = 0; i < 80; i++) {
+            for (let i = 0; i < num; i++) {
                 const ball = document.createElement('div');
                 ball.className = 'ball';
                 ball.style.backgroundColor = getRandomColor();
@@ -102,8 +100,9 @@
             ball.style.opacity = '0';
             ball.removeEventListener('click', bustBall);
             if (!document.querySelector('.ball[style*="opacity: 1"]')) {
-                clearInterval(timerValue);
-                gameMessage.innerText = 'Next Round Starting...';
+                clearInterval(interval);
+                round++;
+                roundEl.innerText = 'Round: ' + round;
                 setTimeout(startGame, 2000);
             }
         }
@@ -117,4 +116,5 @@
         setTimeout(startGame, 2000);
     </script>
 </body>
+
 </html>
