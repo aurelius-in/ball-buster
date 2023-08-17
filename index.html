@@ -31,6 +31,15 @@
         .bomb {
             background-image: url('bomb.png');
         }
+        .ball:focus, .bomb:focus {
+    outline: none;
+}
+
+.ball:active, .bomb:active {
+    -webkit-tap-highlight-color: transparent;
+    tap-highlight-color: transparent;
+}
+
 
         #round, #timer {
             position: absolute;
