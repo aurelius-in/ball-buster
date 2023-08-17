@@ -3,24 +3,26 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0, minimum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <style>
         body {
             background-color: black;
             font-family: sans-serif;
             color: white;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
             overflow: hidden;
+        }
+
+        #gameArea {
             position: relative;
+            height: 90vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .ball, .bomb {
             border-radius: 50%;
             background-size: cover;
-            transition: opacity 0.5s;
         }
 
         .ball {
@@ -31,28 +33,43 @@
             background-image: url('bomb.png');
         }
 
-        #round, #timer, #gameMessage {
+        #round, #timer {
             position: absolute;
             font-size: 1.5em;
+            top: 10px;
         }
 
         #round {
-            top: 10px;
             right: 10px;
         }
 
-        #timer {
-            top: 10px;
-            left: 10px;
+        #gameMessage {
+            font-size: 3em;
+            position: absolute;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1000;
+            display: none;
+            color: white;
         }
 
-        #gameMessage {
-            bottom: 10px;
+        #bombMessage {
+            font-size: 3em;
+            position: absolute;
+            top: 40%;
             left: 50%;
-            transform: translateX(-50%);
+            transform: translate(-50%, -50%);
+            z-index: 1000;
+            display: none;
+            color: red;
         }
 
         #startButton {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
             padding: 10px 20px;
             background-color: white;
             color: black;
@@ -60,16 +77,19 @@
             border-radius: 5px;
             font-size: 1.5em;
             cursor: pointer;
-            transition: opacity 0.5s;
+            z-index: 1001;
         }
     </style>
 </head>
 
 <body>
-    <button id="startButton">Start</button>
-    <div id="round"></div>
-    <div id="timer"></div>
-    <div id="gameMessage">Bust the balls in time!</div>
+    <div id="gameArea">
+        <div id="round"></div>
+        <div id="timer"></div>
+        <div id="gameMessage">Time Out</div>
+        <div id="bombMessage">Bomb Busted</div>
+        <button id="startButton">Start</button>
+    </div>
 
     <script>
         let round = 1;
