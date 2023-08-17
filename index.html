@@ -100,15 +100,18 @@
         }
 
         function bustBall(event) {
-            const ball = event.target;
-            ball.style.opacity = '0';
-            ball.removeEventListener('click', bustBall);
-            if (!document.querySelector('.ball[style*="opacity: 1"]')) {
-                round++;
-                roundEl.innerText = 'Round: ' + round;
-                startGame();
-            }
-        }
+    const ball = event.target;
+    ball.style.opacity = '0';
+    ball.removeEventListener('click', bustBall);
+
+    // Check if all balls are clicked
+    const remainingBalls = document.querySelectorAll('.ball[style*="opacity: 1"]').length;
+    if (remainingBalls === 0) {
+        round++;
+        roundEl.innerText = 'Round: ' + round;
+        startGame();
+    }
+}
 
         function getRandomColor() {
             const colors = ['red', 'blue', 'green', 'yellow', 'purple', 'orange'];
