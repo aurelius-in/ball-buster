@@ -35,7 +35,6 @@
         #round, #timer {
             position: absolute;
             font-size: 1.5em;
-            z-index: 10;
         }
 
         #round {
@@ -49,10 +48,8 @@
         }
 
         #gameMessage {
-            font-size: 2em;
+            font-size: 1.5em;
             margin-bottom: 20px;
-            z-index: 10;
-            display: none;
         }
 
         #startButton {
@@ -64,7 +61,6 @@
             font-size: 1.5em;
             cursor: pointer;
             transition: opacity 0.5s;
-            z-index: 10;
         }
     </style>
 </head>
@@ -85,15 +81,14 @@
         const timerEl = document.getElementById('timer');
 
         function initGame() {
+            gameMessage.innerText = '';
             startButton.style.display = 'block';
             roundEl.innerText = '';
             timerEl.innerText = '';
-            gameMessage.innerText = '';
-            gameMessage.style.display = 'none';
-            clearGrid();
         }
 
         startButton.addEventListener('click', () => {
+            gameMessage.innerText = 'Bust the balls in time!';
             startButton.style.opacity = '0';
             setTimeout(() => {
                 startButton.style.display = 'none';
@@ -101,21 +96,12 @@
             }, 500);
         });
 
-        function clearGrid() {
-            if (grid) {
-                grid.remove();
-                grid = null;
-            }
-        }
-
         function startGame() {
-            gameMessage.style.display = 'block';
-            gameMessage.innerText = 'Bust the balls in time!';
             roundEl.innerText = 'Round: ' + round;
-            let size = round < 6 ? 90 : Math.max(30, 90 - (round - 5) * 10);
+            let size = Math.max(30, 60 - round * 5);
             let rows = round + 2;
             let cols = round + 3;
-
+            if (grid) grid.remove();
             grid = document.createElement('div');
             grid.style.display = 'grid';
             grid.style.gridTemplateColumns = `repeat(${cols}, ${size}px)`;
@@ -133,11 +119,7 @@
                 ball.style.height = `${size}px`;
                 grid.appendChild(ball);
 
-                if (bombIndices.includes(i)) {
-                    ball.addEventListener('click', bustBomb);
-                } else {
-                    ball.addEventListener('click', bustBall);
-                }
+                ball.addEventListener('click', bombIndices.includes(i) ? bustBomb : bustBall);
             }
 
             let timeLeft = 15;
@@ -145,19 +127,22 @@
             interval = setInterval(() => {
                 timeLeft--;
                 timerEl.innerText = `Time: ${timeLeft}`;
-
                 if (timeLeft <= 0) {
                     clearInterval(interval);
                     gameMessage.innerText = 'Out of Time!';
-                    setTimeout(initGame, 1500);
+                    explodeAll();
+                    setTimeout(initGame, 2000);
                 }
             }, 1000);
         }
 
         function bustBall(event) {
             const ball = event.target;
-            ball.style.opacity = '0';
+            ball.style.backgroundImage = "url('explode-ball.png')";
             ball.removeEventListener('click', bustBall);
+            ball.classList.remove('ball');
+            setTimeout(() => ball.style.opacity = '0', 500);
+
             const remainingBalls = document.querySelectorAll('.ball').length;
             if (remainingBalls === 0) {
                 clearInterval(interval);
@@ -167,30 +152,41 @@
         }
 
         function bustBomb(event) {
-            clearInterval(interval);
-            gameMessage.innerText = 'Boom! Game Over!';
+            const bomb = event.target;
+            bomb.style.backgroundImage = "url('explode-bomb.png')";
             setTimeout(() => {
-                initGame();
-            }, 1500);
+                bomb.style.opacity = '0';
+                gameMessage.innerText = 'You hit a bomb! Game Over.';
+                clearInterval(interval);
+                explodeAll();
+                round = 1; // Reset round
+                setTimeout(initGame, 2000);
+            }, 500);
+        }
+
+        function explodeAll() {
+            const allItems = document.querySelectorAll('.ball, .bomb');
+            allItems.forEach(el => {
+                el.style.backgroundImage = "url('explode-ball.png')";
+                setTimeout(() => el.style.opacity = '0', 500);
+            });
         }
 
         function generateBombIndices(totalBalls) {
-    let bombIndices = [];
-    const numberOfBombs = round;  // This will set 1 bomb for the first round, 2 for the second, and so on.
+            const bombIndices = [];
+            const numberOfBombs = round === 1 ? 1 : round; 
 
-    for (let i = 0; i < numberOfBombs; i++) {
-        let bombIndex;
-        do {
-            bombIndex = Math.floor(Math.random() * totalBalls);
-        } while (bombIndices.includes(bombIndex));
-        bombIndices.push(bombIndex);
-    }
-    return bombIndices;
-}
-
+            for (let i = 0; i < numberOfBombs; i++) {
+                let bombIndex;
+                do {
+                    bombIndex = Math.floor(Math.random() * totalBalls);
+                } while (bombIndices.includes(bombIndex));
+                bombIndices.push(bombIndex);
+            }
+            return bombIndices;
+        }
 
         initGame();
     </script>
 </body>
-
 </html>
