@@ -98,8 +98,7 @@
                 gameGrid.appendChild(ball);
             }
         }
-
-        function bustBall(event) {
+function bustBall(event) {
     const ball = event.target;
     ball.style.opacity = '0';
     ball.removeEventListener('click', bustBall);
