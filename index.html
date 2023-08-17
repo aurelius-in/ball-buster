@@ -10,14 +10,15 @@
             font-family: sans-serif;
             color: white;
             overflow: hidden;
+            margin: 0;
+            padding: 0;
         }
 
         #gameArea {
             position: relative;
             height: 90vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            padding-top: 5vh;
+            box-sizing: border-box;
         }
 
         .ball, .bomb {
@@ -34,16 +35,22 @@
         }
 
         #round, #timer {
-            position: absolute;
             font-size: 1.5em;
-            top: 10px;
         }
 
         #round {
+            position: absolute;
+            top: 10px;
             right: 10px;
         }
 
-        #gameMessage {
+        #timer {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+        }
+
+        #gameMessage, #bombMessage {
             font-size: 3em;
             position: absolute;
             top: 40%;
@@ -51,23 +58,15 @@
             transform: translate(-50%, -50%);
             z-index: 1000;
             display: none;
-            color: white;
         }
 
         #bombMessage {
-            font-size: 3em;
-            position: absolute;
-            top: 40%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 1000;
-            display: none;
             color: red;
         }
 
         #startButton {
             position: absolute;
-            bottom: 10px;
+            bottom: 5vh;
             left: 50%;
             transform: translateX(-50%);
             padding: 10px 20px;
@@ -84,8 +83,8 @@
 
 <body>
     <div id="gameArea">
-        <div id="round"></div>
-        <div id="timer"></div>
+        <div id="round">Round 1</div>
+        <div id="timer">15</div>
         <div id="gameMessage">Time Out</div>
         <div id="bombMessage">Bomb Busted</div>
         <button id="startButton">Start</button>
