@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ball Buster</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0, minimum-scale=1.0">
     <style>
         body {
             background-color: black;
@@ -31,11 +31,25 @@
             background-image: url('bomb.png');
         }
 
-        #round {
+        #round, #timer, #gameMessage {
             position: absolute;
+            font-size: 1.5em;
+        }
+
+        #round {
             top: 10px;
             right: 10px;
-            font-size: 1.5em;
+        }
+
+        #timer {
+            top: 10px;
+            left: 10px;
+        }
+
+        #gameMessage {
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
         }
 
         #startButton {
@@ -48,22 +62,9 @@
             cursor: pointer;
             transition: opacity 0.5s;
         }
-
-        #gameMessage {
-            position: absolute;
-            bottom: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-        }
-
-        #timer {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            font-size: 1.5em;
-        }
     </style>
 </head>
+
 <body>
     <button id="startButton">Start</button>
     <div id="round"></div>
@@ -84,7 +85,6 @@
             round = 1;
             if (grid) grid.remove();
             startButton.style.display = 'block';
-            startButton.style.opacity = '1';
             roundEl.innerText = '';
             timerEl.innerText = '';
         }
