@@ -175,17 +175,19 @@
         }
 
         function generateBombIndices(totalBalls) {
-            let bombIndices = [];
-            const numberOfBombs = 5;
-            for (let i = 0; i < numberOfBombs; i++) {
-                let bombIndex;
-                do {
-                    bombIndex = Math.floor(Math.random() * totalBalls);
-                } while (bombIndices.includes(bombIndex));
-                bombIndices.push(bombIndex);
-            }
-            return bombIndices;
-        }
+    let bombIndices = [];
+    const numberOfBombs = round;  // This will set 1 bomb for the first round, 2 for the second, and so on.
+
+    for (let i = 0; i < numberOfBombs; i++) {
+        let bombIndex;
+        do {
+            bombIndex = Math.floor(Math.random() * totalBalls);
+        } while (bombIndices.includes(bombIndex));
+        bombIndices.push(bombIndex);
+    }
+    return bombIndices;
+}
+
 
         initGame();
     </script>
