@@ -98,36 +98,49 @@
         }
 
         function bustBall(event) {
-            const ball = event.target;
-            ball.style.backgroundImage = "url('explode-ball.png')";
-            setTimeout(() => {
-                ball.style.opacity = '0';
-            }, 500);
-            ball.removeEventListener('click', bustBall);
+    const ball = event.target;
+    ball.style.backgroundImage = "url('explode-ball.png')";
+    setTimeout(() => {
+        ball.style.opacity = '0';
+        ball.removeEventListener('click', bustBall);
+        ball.classList.remove('ball');  // removing ball class after explosion
 
-            const remainingBalls = Array.from(document.querySelectorAll('.ball')).filter(b => getComputedStyle(b).opacity !== '0').length;
-            if (remainingBalls === 0) {
-                round++;
-                roundEl.innerText = 'Round: ' + round;
-                startGame();
-            }
+        const remainingBalls = Array.from(document.querySelectorAll('.ball')).length;
+        if (remainingBalls === 0) {
+            round++;
+            roundEl.innerText = 'Round: ' + round;
+            startGame();
         }
+    }, 500);
+}
 
-        function bustBomb(event) {
-            const bomb = event.target;
-            bomb.style.backgroundImage = "url('explode-bomb.png')";
-            setTimeout(() => {
-                const explosion = document.createElement('div');
-                explosion.className = 'explosion';
-                document.body.appendChild(explosion);
-                setTimeout(() => explosion.remove(), 1000);
-                gameMessage.innerText = 'You hit a bomb! Game Over.';
-                clearInterval(interval);
-                Array.from(document.querySelectorAll('.ball, .bomb')).forEach(el => {
-                    el.style.opacity = '0';
-                });
-            }, 500);
+function generateBombIndices(total) {
+    let bombIndices = [];
+    while (bombIndices.length < round) {
+        let idx = Math.floor(Math.random() * total);
+        if (idx !== 0 && !bombIndices.includes(idx)) {
+            bombIndices.push(idx);
         }
+    }
+    return bombIndices;
+}
+
+function bustBomb(event) {
+    const bomb = event.target;
+    bomb.style.backgroundImage = "url('explode-bomb.png')";
+    setTimeout(() => {
+        const explosion = document.createElement('div');
+        explosion.className = 'explosion';
+        document.body.appendChild(explosion);
+        setTimeout(() => explosion.remove(), 1000);
+        gameMessage.innerText = 'You hit a bomb! Game Over.';
+        clearInterval(interval);
+        Array.from(document.querySelectorAll('.ball, .bomb')).forEach(el => {
+            el.style.opacity = '0';
+        });
+    }, 500);
+}
+
 
         document.body.addEventListener('touchmove', event => event.preventDefault());
         setTimeout(startGame, 2000);
