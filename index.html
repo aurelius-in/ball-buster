@@ -2,15 +2,29 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="mobile-web-app-capable" content="yes">
     <title>Ball Buster</title>
     <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+        }
+
         body {
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
-            height: 100vh;
             background-color: #eee;
+        }
+
+        .score {
+            font-size: 24px;
+            margin-bottom: 20px;
         }
 
         .game-grid {
@@ -18,37 +32,69 @@
             grid-template-columns: repeat(8, 1fr);
             gap: 4px;
             width: 90%;
-            max-width: 400px;
+            height: 90%;
         }
 
         .ball {
             width: 100%;
-            padding-top: 100%; /* makes it a square */
-            border-radius: 50%; /* makes it round */
-            background-color: red; /* default color, will be overridden by JavaScript */
+            padding-top: 100%;
+            border-radius: 50%;
+            background: radial-gradient(circle, white, red);
+            position: relative;
+            overflow: hidden;
         }
     </style>
 </head>
 <body>
-    <div class="game-grid">
-        <!-- Balls will be added here dynamically with JavaScript -->
-    </div>
+    <div class="score">Score: <span id="score">0</span></div>
+    <div class="game-grid"></div>
     <script>
         const gameGrid = document.querySelector('.game-grid');
+        const scoreEl = document.getElementById('score');
+        let currentScore = 0;
 
-        // Create a basic 8x8 grid of balls with random colors
         for (let i = 0; i < 64; i++) {
             const ball = document.createElement('div');
             ball.className = 'ball';
-            ball.style.backgroundColor = getRandomColor();
+            ball.style.backgroundImage = `radial-gradient(circle, white, ${getRandomColor()})`;
+            ball.addEventListener('click', explodeBall);
             gameGrid.appendChild(ball);
         }
 
-        // Function to return a random color
         function getRandomColor() {
             const colors = ['red', 'blue', 'green', 'yellow', 'purple', 'orange'];
             return colors[Math.floor(Math.random() * colors.length)];
         }
+
+        function explodeBall(event) {
+            const ball = event.target;
+            const explosionSize = 15;
+            for (let i = 0; i < explosionSize; i++) {
+                const pixel = document.createElement('div');
+                pixel.style.width = '3px';
+                pixel.style.height = '3px';
+                pixel.style.backgroundColor = getRandomColor();
+                pixel.style.position = 'absolute';
+                pixel.style.top = `${Math.random() * 100}%`;
+                pixel.style.left = `${Math.random() * 100}%`;
+                ball.appendChild(pixel);
+            }
+            ball.removeEventListener('click', explodeBall);
+            currentScore += 10;
+            scoreEl.innerText = currentScore;
+
+            setTimeout(() => {
+                ball.style.backgroundImage = `radial-gradient(circle, white, ${getRandomColor()})`;
+                ball.addEventListener('click', explodeBall);
+                while (ball.firstChild) {
+                    ball.removeChild(ball.firstChild);
+                }
+            }, 500);
+        }
+
+        document.body.addEventListener('touchmove', event => {
+            event.preventDefault();
+        });
     </script>
 </body>
 </html>
