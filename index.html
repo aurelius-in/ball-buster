@@ -42,7 +42,7 @@
             width: 100%;
             padding-top: 100%;
             border-radius: 50%;
-            box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.2);
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.4);
             transition: transform 0.2s;
         }
         .ball:active {
@@ -53,7 +53,7 @@
 
 <body>
     <div class="header">
-        <div class="timer">Time: <span id="timer">0</span></div>
+        <div class="timer">Time: <span id="timer">15</span></div>
         <div class="round">Round: 1</div>
     </div>
     <div class="game-message">Bust the balls in time!</div>
@@ -67,14 +67,18 @@
         let interval, round = 1;
 
         function startGame() {
-            let roundBalls = round + 2;
-            gameGrid.style.gridTemplateColumns = `repeat(${roundBalls}, 1fr)`;
-            populateBalls(roundBalls * roundBalls);
-            timerEl.innerText = roundBalls * roundBalls;
-            startTimer();
+            let roundWidth = round + 2;
+            let roundHeight = round + 4;
+            gameGrid.style.gridTemplateColumns = `repeat(${roundWidth}, 1fr)`;
+            populateBalls(roundWidth * roundHeight);
+            resetTimer();
         }
 
-        function startTimer() {
+        function resetTimer() {
+            timerEl.innerText = 15;
+            if (interval) {
+                clearInterval(interval);
+            }
             interval = setInterval(() => {
                 timerEl.innerText--;
                 if (timerEl.innerText == "0") {
@@ -100,10 +104,9 @@
             ball.style.opacity = '0';
             ball.removeEventListener('click', bustBall);
             if (!document.querySelector('.ball[style*="opacity: 1"]')) {
-                clearInterval(interval);
                 round++;
                 roundEl.innerText = 'Round: ' + round;
-                setTimeout(startGame, 2000);
+                startGame();
             }
         }
 
