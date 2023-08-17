@@ -99,8 +99,8 @@
         function startGame() {
             roundEl.innerText = 'Round: ' + round;
             let size = Math.max(30, 60 - round * 5);
-            let rows = round + 2;
-            let cols = round + 3;
+            let cols = round + 2; // Rows
+            let rows = cols + 1;  // Cols
             if (grid) grid.remove();
             grid = document.createElement('div');
             grid.style.display = 'grid';
@@ -110,16 +110,16 @@
             document.body.appendChild(grid);
 
             const totalBalls = rows * cols;
-            const bombIndices = generateBombIndices(totalBalls);
+            const bombIndices = generateBombIndices(totalBalls, round);
 
             for (let i = 0; i < totalBalls; i++) {
-                const ball = document.createElement('div');
-                ball.className = bombIndices.includes(i) ? 'bomb' : 'ball';
-                ball.style.width = `${size}px`;
-                ball.style.height = `${size}px`;
-                grid.appendChild(ball);
+                const item = document.createElement('div');
+                item.className = bombIndices.includes(i) ? 'bomb' : 'ball';
+                item.style.width = `${size}px`;
+                item.style.height = `${size}px`;
+                grid.appendChild(item);
 
-                ball.addEventListener('click', bombIndices.includes(i) ? bustBomb : bustBall);
+                item.addEventListener('click', bombIndices.includes(i) ? bustBomb : bustBall);
             }
 
             let timeLeft = 15;
@@ -143,8 +143,7 @@
             ball.classList.remove('ball');
             setTimeout(() => ball.style.opacity = '0', 500);
 
-            const remainingBalls = document.querySelectorAll('.ball').length;
-            if (remainingBalls === 0) {
+            if (document.querySelectorAll('.ball').length === 0) {
                 clearInterval(interval);
                 round++;
                 startGame();
@@ -155,11 +154,10 @@
             const bomb = event.target;
             bomb.style.backgroundImage = "url('explode-bomb.png')";
             setTimeout(() => {
-                bomb.style.opacity = '0';
                 gameMessage.innerText = 'You hit a bomb! Game Over.';
                 clearInterval(interval);
+                round = 1; // Reset to the first round
                 explodeAll();
-                round = 1; // Reset round
                 setTimeout(initGame, 2000);
             }, 500);
         }
@@ -172,14 +170,12 @@
             });
         }
 
-        function generateBombIndices(totalBalls) {
+        function generateBombIndices(total, numberOfBombs) {
             const bombIndices = [];
-            const numberOfBombs = round === 1 ? 1 : round; 
-
             for (let i = 0; i < numberOfBombs; i++) {
                 let bombIndex;
                 do {
-                    bombIndex = Math.floor(Math.random() * totalBalls);
+                    bombIndex = Math.floor(Math.random() * total);
                 } while (bombIndices.includes(bombIndex));
                 bombIndices.push(bombIndex);
             }
