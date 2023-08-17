@@ -49,8 +49,10 @@
         }
 
         #gameMessage {
-            font-size: 3em;
+            font-size: 2em;
             margin-bottom: 20px;
+            z-index: 10;
+            display: none;
         }
 
         #startButton {
@@ -64,12 +66,6 @@
             transition: opacity 0.5s;
             z-index: 10;
         }
-
-        #grid {
-            max-width: 90vw;
-            max-height: 80vh;
-            overflow: auto;
-        }
     </style>
 </head>
 
@@ -78,7 +74,6 @@
     <button id="startButton">Start</button>
     <div id="round"></div>
     <div id="timer"></div>
-    <div id="grid"></div>
 
     <script>
         let round = 1;
@@ -88,15 +83,14 @@
         const startButton = document.getElementById('startButton');
         const gameMessage = document.getElementById('gameMessage');
         const timerEl = document.getElementById('timer');
-        const gridContainer = document.getElementById('grid');
 
         function initGame() {
-            gameMessage.innerText = 'Bust the balls in time!';
-            round = 1;
-            clearGrid();
             startButton.style.display = 'block';
             roundEl.innerText = '';
             timerEl.innerText = '';
+            gameMessage.innerText = '';
+            gameMessage.style.display = 'none';
+            clearGrid();
         }
 
         startButton.addEventListener('click', () => {
@@ -115,9 +109,10 @@
         }
 
         function startGame() {
-            clearGrid();
+            gameMessage.style.display = 'block';
+            gameMessage.innerText = 'Bust the balls in time!';
             roundEl.innerText = 'Round: ' + round;
-            let size = round < 6 ? 90 : Math.max(30, 90 - (round - 5) * 10); // Reduce size from round 6 onwards
+            let size = round < 6 ? 90 : Math.max(30, 90 - (round - 5) * 10);
             let rows = round + 2;
             let cols = round + 3;
 
@@ -126,7 +121,7 @@
             grid.style.gridTemplateColumns = `repeat(${cols}, ${size}px)`;
             grid.style.gridTemplateRows = `repeat(${rows}, ${size}px)`;
             grid.style.gap = '10px';
-            gridContainer.appendChild(grid);
+            document.body.appendChild(grid);
 
             const totalBalls = rows * cols;
             const bombIndices = generateBombIndices(totalBalls);
@@ -153,38 +148,43 @@
 
                 if (timeLeft <= 0) {
                     clearInterval(interval);
-                    const remainingBalls = Array.from(document.querySelectorAll('.ball')).length;
-                    gameMessage.innerText = 'Time up! ' + (remainingBalls === 0 ? 'On to the next round!' : 'Try again!');
-                    roundEl.innerText = '';
-                    timerEl.innerText = '';
-
-                    if (remainingBalls === 0) {
-                        round++;
-                        startGame();
-                    } else {
-                        initGame();
-                    }
+                    gameMessage.innerText = 'Out of Time!';
+                    setTimeout(initGame, 1500);
                 }
             }, 1000);
         }
 
-        function bustBall(e) {
-            e.target.classList.remove('ball');
-            e.target.removeEventListener('click', bustBall);
+        function bustBall(event) {
+            const ball = event.target;
+            ball.style.opacity = '0';
+            ball.removeEventListener('click', bustBall);
+            const remainingBalls = document.querySelectorAll('.ball').length;
+            if (remainingBalls === 0) {
+                clearInterval(interval);
+                round++;
+                startGame();
+            }
         }
 
-        function bustBomb(e) {
+        function bustBomb(event) {
             clearInterval(interval);
             gameMessage.innerText = 'Boom! Game Over!';
-            roundEl.innerText = '';
-            timerEl.innerText = '';
             setTimeout(() => {
                 initGame();
             }, 1500);
         }
 
         function generateBombIndices(totalBalls) {
-            // Generate random bomb indices, similar logic as before...
+            let bombIndices = [];
+            const numberOfBombs = 5;
+            for (let i = 0; i < numberOfBombs; i++) {
+                let bombIndex;
+                do {
+                    bombIndex = Math.floor(Math.random() * totalBalls);
+                } while (bombIndices.includes(bombIndex));
+                bombIndices.push(bombIndex);
+            }
+            return bombIndices;
         }
 
         initGame();
