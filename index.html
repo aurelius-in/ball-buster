@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ball Buster</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #eee;
+        }
+
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 4px;
+            width: 90%;
+            max-width: 400px;
+        }
+
+        .ball {
+            width: 100%;
+            padding-top: 100%; /* makes it a square */
+            border-radius: 50%; /* makes it round */
+            background-color: red; /* default color, will be overridden by JavaScript */
+        }
+    </style>
+</head>
+<body>
+    <div class="game-grid">
+        <!-- Balls will be added here dynamically with JavaScript -->
+    </div>
+    <script>
+        const gameGrid = document.querySelector('.game-grid');
+
+        // Create a basic 8x8 grid of balls with random colors
+        for (let i = 0; i < 64; i++) {
+            const ball = document.createElement('div');
+            ball.className = 'ball';
+            ball.style.backgroundColor = getRandomColor();
+            gameGrid.appendChild(ball);
+        }
+
+        // Function to return a random color
+        function getRandomColor() {
+            const colors = ['red', 'blue', 'green', 'yellow', 'purple', 'orange'];
+            return colors[Math.floor(Math.random() * colors.length)];
+        }
+    </script>
+</body>
+</html>
