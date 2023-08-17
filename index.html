@@ -94,7 +94,9 @@
             let cols = round + 1;
             grid = document.createElement('div');
             grid.style.display = 'grid';
-            grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+            grid.style.gridTemplateColumns = `repeat(${cols}, 60px)`;
+            grid.style.gridTemplateRows = `repeat(${rows}, 60px)`;
+            grid.style.gap = '10px';
             document.body.appendChild(grid);
 
             const totalBalls = rows * cols;
