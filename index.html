@@ -72,14 +72,6 @@
     <div id="timer"></div>
 
     <script>
-        // ... Code to handle game logic
-    </script>
-</body>
-
-</html>
-
-
-    <script>
         let round = 1;
         let interval;
         let grid;
@@ -89,10 +81,11 @@
         const timerEl = document.getElementById('timer');
 
         function initGame() {
-            gameMessage.innerText = 'Bust the balls in time!';
+            gameMessage.innerText = '';
             round = 1;
             if (grid) grid.remove();
             startButton.style.display = 'block';
+            startButton.style.opacity = '1';
             roundEl.innerText = '';
             timerEl.innerText = '';
         }
@@ -107,10 +100,11 @@
 
         function startGame() {
             if (grid) grid.remove();
+            gameMessage.innerText = '';
             roundEl.innerText = 'Round: ' + round;
-            let size = Math.max(30, 60 - round * 5);
+            let size = round < 6 ? 60 : Math.max(30, 90 - round * 5);
             let rows = round + 2;
-            let cols = round + 1;
+            let cols = round + 3;
             grid = document.createElement('div');
             grid.style.display = 'grid';
             grid.style.gridTemplateColumns = `repeat(${cols}, ${size}px)`;
@@ -137,20 +131,19 @@
 
             let timeLeft = 15;
             timerEl.innerText = `Time: ${timeLeft}`;
+            if (interval) clearInterval(interval);
             interval = setInterval(() => {
                 timeLeft--;
                 timerEl.innerText = `Time: ${timeLeft}`;
 
                 if (timeLeft <= 0) {
                     clearInterval(interval);
-                    const remainingBalls = Array.from(document.querySelectorAll('.ball')).length;
                     gameMessage.innerText = 'Out of Time!';
                     explodeAll();
-                    setTimeout(initGame, 1500);
+                    setTimeout(initGame, 2500);
                 }
             }, 1000);
         }
-
 
         function bustBall(event) {
             const ball = event.target;
@@ -170,14 +163,14 @@
         }
 
         function bustBomb(event) {
+            clearInterval(interval);
             const bomb = event.target;
             bomb.style.backgroundImage = "url('explode-bomb.png')";
             setTimeout(() => {
                 bomb.style.opacity = '0';
                 gameMessage.innerText = 'You hit a bomb! Game Over.';
-                clearInterval(interval);
                 explodeAll();
-                initGame();
+                setTimeout(initGame, 2500);
             }, 500);
         }
 
@@ -202,4 +195,5 @@
         initGame();
     </script>
 </body>
+
 </html>
